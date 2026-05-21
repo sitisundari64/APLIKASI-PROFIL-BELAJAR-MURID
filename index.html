@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplikasi Profil Belajar Murid (PBS)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #1a5fa8;
+      --primary-light: #e6f1fb;
+      --primary-mid: #378add;
+      --success: #1D9E75;
+      --success-light: #E1F5EE;
+      --amber: #BA7517;
+      --amber-light: #FAEEDA;
+      --danger: #A32D2D;
+      --danger-light: #FCEBEB;
+      --gray: #5F5E5A;
+      --gray-light: #F1EFE8;
+      --font: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .app-wrapper {
+      background: linear-gradient(135deg, #0a3d6b 0%, #1a5fa8 50%, #0e4d8a 100%);
+      min-height: 100vh;
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(26, 95, 168, 0.35);
+    }
+
+    /* ===== WATERMARK ===== */
+    .watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+      font-size: 52px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.04);
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 9999;
+      letter-spacing: 6px;
+      font-family: var(--font);
+      user-select: none;
+    }
+
+    .bg-pattern {
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(55,138,221,0.3) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .screen {
+      position: relative;
+      z-index: 1;
+      display: none;
+    }
+    .screen.active { display: block; }
+
+    /* ===== WELCOME ===== */
+    .welcome-header {
+      text-align: center;
+      padding: 40px 24px 24px;
+      color: white;
+    }
+
+    .logos {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .logo-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: 700;
+      color: var(--primary);
+      text-align: center;
+      line-height: 1.3;
+      padding: 4px;
+      border: 2px solid rgba(255,255,255,0.4);
+    }
+
+    .logo-divider {
+      width: 1px;
+      height: 36px;
+      background: rgba(255,255,255,0.35);
+    }
+
+    .welcome-title {
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .welcome-subtitle {
+      font-size: 13px;
+      opacity: 0.85;
+      line-height: 1.6;
+      max-width: 340px;
+      margin: 0 auto;
+    }
+
+    .welcome-card {
+      background: white;
+      border-radius: 24px 24px 0 0;
+      padding: 30px 24px 36px;
+      margin-top: 20px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 14px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .menu-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 18px 10px;
+      border-radius: 16px;
+      border: 1.5px solid #e0e7f0;
+      background: #f8fbff;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font);
+      text-align: center;
+    }
+
+    .menu-btn:hover {
+      border-color: var(--primary-mid);
+      background: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(26,95,168,0.15);
+    }
+
+    .menu-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .menu-btn span {
+      font-size: 11px;
+      font-weight: 600;
+      color: #2c3e50;
+      line-height: 1.3;
+    }
+
+    .info-banner {
+      background: var(--primary-light);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      border-left: 4px solid var(--primary-mid);
+    }
+
+    .info-banner .icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .info-banner p { font-size: 12.5px; color: #1a3a6b; line-height: 1.6; }
+    .info-banner strong { font-weight: 600; }
+
+    /* ===== FORM HEADER ===== */
+    .form-header {
+      color: white;
+      padding: 24px 20px 32px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-family: var(--font);
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: background 0.2s;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.28); }
+
+    .form-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .form-subtitle { font-size: 13px; opacity: 0.8; }
+
+    .form-body {
+      background: white;
+      border-radius: 22px 22px 0 0;
+      padding: 26px 20px 36px;
+      margin-top: -14px;
+      min-height: 500px;
+    }
+
+    /* ===== STUDENT FORM ===== */
+    .student-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .field-group { display: flex; flex-direction: column; gap: 5px; }
+    .field-group.full { grid-column: 1/-1; }
+
+    .field-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .field-input {
+      border: 1.5px solid #e0e7f0;
+      border-radius: 10px;
+      padding: 10px 13px;
+      font-size: 13.5px;
+      font-family: var(--font);
+      color: #1a2533;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+    .field-input:focus {
+      border-color: var(--primary-mid);
+      box-shadow: 0 0 0 3px rgba(55,138,221,0.12);
+    }
+
+    .field-select {
+      border: 1.5px solid #e0e7f0;
+      border-radius: 10px;
+      padding: 10px 13px;
+      font-size: 13.5px;
+      font-family: var(--font);
+      color: #1a2533;
+      outline: none;
+      background: white;
+      cursor: pointer;
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+    .field-select:focus { border-color: var(--primary-mid); }
+
+    /* ===== SECTION TITLE ===== */
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a2533;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .section-badge {
+      font-size: 10px;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    /* ===== PROGRESS ===== */
+    .progress-section { margin-bottom: 16px; }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--gray);
+      margin-bottom: 8px;
+    }
+
+    .progress-bar {
+      height: 7px;
+      background: #eef2f7;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-mid), var(--primary));
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+
+    /* ===== CATEGORY PILLS ===== */
+    .category-pills {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 18px;
+      scrollbar-width: none;
+    }
+    .category-pills::-webkit-scrollbar { display: none; }
+
+    .category-pill {
+      flex-shrink: 0;
+      padding: 5px 13px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1.5px solid #e0e7f0;
+      color: var(--gray);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      background: white;
+    }
+
+    .category-pill.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .category-pill.done {
+      background: var(--success-light);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    /* ===== HAMBATAN ITEMS ===== */
+    .hambatan-list { display: flex; flex-direction: column; gap: 9px; }
+
+    .hambatan-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 15px;
+      border-radius: 13px;
+      border: 1.5px solid #eef2f7;
+      background: #fafbfd;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .hambatan-item:hover {
+      border-color: var(--primary-mid);
+      background: var(--primary-light);
+    }
+
+    .hambatan-item.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(55,138,221,0.1);
+    }
+
+    .radio-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #c8d6e5;
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .hambatan-item.selected .radio-dot {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+
+    .radio-inner {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: white;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .hambatan-item.selected .radio-inner { opacity: 1; }
+
+    .hambatan-text { font-size: 13px; color: #2c3e50; line-height: 1.55; flex: 1; }
+    .hambatan-text strong {
+      font-weight: 700;
+      display: block;
+      margin-bottom: 3px;
+      color: #1a2533;
+      font-size: 13.5px;
+    }
+
+    /* ===== NAVIGATION BUTTONS ===== */
+    .nav-btns {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+      padding-bottom: 10px;
+    }
+
+    .btn-prev, .btn-next {
+      flex: 1;
+      padding: 14px;
+      border-radius: 13px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-prev {
+      background: #f0f4f8;
+      color: var(--gray);
+    }
+    .btn-prev:hover { background: #e0e8f0; }
+
+    .btn-next {
+      background: linear-gradient(135deg, var(--primary-mid), var(--primary));
+      color: white;
+      box-shadow: 0 4px 14px rgba(26,95,168,0.3);
+    }
+    .btn-next:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(26,95,168,0.4);
+    }
+
+    .btn-full {
+      width: 100%;
+      padding: 15px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary-mid), var(--primary));
+      color: white;
+      border: none;
+      box-shadow: 0 4px 14px rgba(26,95,168,0.3);
+      margin-top: 20px;
+      transition: all 0.2s;
+    }
+    .btn-full:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(26,95,168,0.4);
+    }
+
+    /* ===== RESULT SCREEN ===== */
+    .result-header {
+      color: white;
+      padding: 28px 20px 40px;
+      text-align: center;
+    }
+
+    .result-icon { font-size: 48px; margin-bottom: 12px; }
+    .result-title { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+    .result-student { font-size: 14px; opacity: 0.85; }
+
+    .result-body {
+      background: white;
+      border-radius: 22px 22px 0 0;
+      padding: 26px 20px 40px;
+      margin-top: -16px;
+    }
+
+    .result-card {
+      border-radius: 15px;
+      padding: 17px;
+      margin-bottom: 14px;
+      border: 1.5px solid transparent;
+    }
+
+    .result-card.blue { background: var(--primary-light); border-color: #b5d4f4; }
+    .result-card.green { background: var(--success-light); border-color: #9FE1CB; }
+    .result-card.amber { background: var(--amber-light); border-color: #FAC775; }
+    .result-card.danger { background: var(--danger-light); border-color: #F7C1C1; }
+
+    .result-card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .result-card-icon { font-size: 22px; }
+
+    .result-card-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #1a2533;
+    }
+
+    .result-tag {
+      display: inline-block;
+      padding: 4px 11px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      margin: 3px 3px 3px 0;
+    }
+
+    .tag-blue { background: #b5d4f4; color: #0C447C; }
+    .tag-green { background: #9FE1CB; color: #085041; }
+    .tag-amber { background: #FAC775; color: #633806; }
+    .tag-red { background: #F7C1C1; color: #791F1F; }
+
+    .result-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: 13px;
+      color: #2c3e50;
+      line-height: 1.55;
+      margin-bottom: 7px;
+    }
+
+    .result-bullet {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    .result-item strong { font-weight: 600; }
+
+    .student-summary-card {
+      background: #f8fbff;
+      border: 1.5px solid #e0e7f0;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 16px;
+    }
+
+    .summary-item { font-size: 12px; color: var(--gray); }
+    .summary-item strong { display: block; font-size: 14px; color: #1a2533; font-weight: 600; margin-top: 2px; }
+    .summary-item.full { grid-column: 1/-1; }
+
+    .print-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      background: white;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      margin-top: 10px;
+      transition: all 0.2s;
+    }
+    .print-btn:hover { background: var(--primary-light); }
+
+    .btn-outline {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      background: white;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      margin-top: 10px;
+      transition: all 0.2s;
+    }
+    .btn-outline:hover { background: var(--primary-light); }
+
+    /* ===== SAVED SCREEN ===== */
+    .data-body {
+      background: white;
+      border-radius: 22px 22px 0 0;
+      padding: 22px 20px;
+      margin-top: -14px;
+      min-height: 450px;
+    }
+
+    .data-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 0;
+      border-bottom: 1px solid #f0f4f8;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .data-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      background: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .data-info { flex: 1; padding: 0 13px; }
+    .data-name { font-size: 14.5px; font-weight: 600; color: #1a2533; margin-bottom: 3px; }
+    .data-meta { font-size: 11.5px; color: var(--gray); }
+    .data-arrow { font-size: 18px; color: #c8d6e5; }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--gray);
+    }
+    .empty-icon { font-size: 52px; margin-bottom: 14px; opacity: 0.35; }
+    .empty-state p { font-size: 13.5px; line-height: 1.6; }
+    .empty-state strong { font-weight: 600; color: #1a2533; display: block; margin-bottom: 4px; }
+
+    /* ===== SCAN SCREEN ===== */
+    .scan-area {
+      margin: 24px 0;
+      border: 2.5px dashed #c8d6e5;
+      border-radius: 18px;
+      padding: 48px 20px;
+      text-align: center;
+    }
+    .scan-area .scan-icon { font-size: 48px; margin-bottom: 14px; display: block; }
+    .scan-area p { font-size: 13.5px; color: var(--gray); line-height: 1.6; }
+    .scan-area strong { font-weight: 600; color: #1a2533; display: block; margin-bottom: 6px; }
+
+    /* ===== FOOTER ===== */
+    .app-footer {
+      text-align: center;
+      padding: 16px;
+      color: rgba(255,255,255,0.5);
+      font-size: 11px;
+    }
+
+    /* ===== PRINT ===== */
+    @media print {
+      body { background: white; padding: 0; }
+      .app-wrapper {
+        box-shadow: none;
+        border-radius: 0;
+        background: white !important;
+      }
+      .bg-pattern { display: none; }
+      #screen-result { display: block !important; }
+      #screen-welcome, #screen-input, #screen-scan, #screen-saved { display: none !important; }
+      .btn-full, .print-btn, .btn-outline { display: none; }
+      .result-header { background: #1a5fa8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .result-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .watermark { color: rgba(0,0,0,0.06); }
+    }
+
+    @media (max-width: 380px) {
+      .menu-grid { grid-template-columns: 1fr 1fr; }
+      .student-info-grid { grid-template-columns: 1fr; }
+      .student-info-grid .field-group.full { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="app-wrapper">
+    <div class="bg-pattern"></div>
+    <div class="watermark">SITI SUNDARI</div>
+
+    <!-- ========== WELCOME SCREEN ========== -->
+    <div class="screen active" id="screen-welcome">
+      <div class="welcome-header">
+        <div class="logos">
+          <div class="logo-circle">KEMEN<br>DIKDASMEN</div>
+          <div class="logo-divider"></div>
+          <div class="logo-circle">KEMEN<br>AG</div>
+        </div>
+        <div class="welcome-title">🎓 Selamat Datang!</div>
+        <div class="welcome-subtitle">Aplikasi Profil Belajar Murid (PBS) — Sistem Identifikasi Hambatan Fungsional untuk Pendidikan Inklusif</div>
+      </div>
+      <div class="welcome-card">
+        <div class="section-label">🗂 Menu Utama</div>
+        <div class="menu-grid">
+          <button class="menu-btn" onclick="showScreen('scan')">
+            <div class="menu-icon" style="background:#e6f1fb;">📷</div>
+            <span>Scan Data</span>
+          </button>
+          <button class="menu-btn" onclick="showScreen('input')">
+            <div class="menu-icon" style="background:#E1F5EE;">✏️</div>
+            <span>Input Data Baru</span>
+          </button>
+          <button class="menu-btn" onclick="showScreen('saved')">
+            <div class="menu-icon" style="background:#FAEEDA;">📋</div>
+            <span>Lihat Data Tersimpan</span>
+          </button>
+        </div>
+        <div class="info-banner">
+          <div class="icon">💡</div>
+          <p><strong>Tentang Aplikasi PBS:</strong> Membantu guru mencatat dan mengelola data murid dengan kesulitan fungsional untuk layanan pembelajaran yang lebih tepat, akomodatif, dan inklusif.</p>
+        </div>
+      </div>
+      <div class="app-footer">© 2025 Kemendikdasmen &amp; Kemenag RI</div>
+    </div>
+
+    <!-- ========== SCAN SCREEN ========== -->
+    <div class="screen" id="screen-scan">
+      <div class="form-header">
+        <button class="back-btn" onclick="showScreen('welcome')">← Kembali</button>
+        <div class="form-title">📷 Scan Data Murid</div>
+        <div class="form-subtitle">Pindai QR Code atau barcode profil murid</div>
+      </div>
+      <div class="form-body">
+        <div class="scan-area">
+          <span class="scan-icon">📸</span>
+          <p><strong>Arahkan kamera ke QR Code</strong>Sistem akan mendeteksi dan membaca data murid secara otomatis dari QR Code yang telah dicetak sebelumnya.</p>
+        </div>
+        <div class="info-banner">
+          <div class="icon">ℹ️</div>
+          <p>Fitur scan berfungsi untuk membaca profil murid yang telah dicetak dalam bentuk QR Code. Pastikan pencahayaan cukup saat melakukan scan.</p>
+        </div>
+        <button class="btn-full" onclick="showScreen('welcome')" style="margin-top:24px;">Kembali ke Menu</button>
+      </div>
+    </div>
+
+    <!-- ========== INPUT SCREEN ========== -->
+    <div class="screen" id="screen-input">
+      <div class="form-header">
+        <button class="back-btn" onclick="showScreen('welcome')">← Kembali</button>
+        <div class="form-title">📝 Input Data Baru</div>
+        <div class="form-subtitle">Isi profil hambatan fungsional murid</div>
+      </div>
+      <div class="form-body">
+
+        <!-- STEP 0: Data Murid -->
+        <div id="step-0">
+          <div class="section-title">👤 Data Identitas Murid <span class="section-badge">Langkah 1 dari 11</span></div>
+          <div class="student-info-grid">
+            <div class="field-group full">
+              <div class="field-label">Nama Lengkap Murid *</div>
+              <input type="text" class="field-input" id="f-nama" placeholder="Masukkan nama lengkap...">
+            </div>
+            <div class="field-group">
+              <div class="field-label">NISN</div>
+              <input type="text" class="field-input" id="f-nisn" placeholder="Nomor NISN...">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Tanggal Lahir</div>
+              <input type="date" class="field-input" id="f-tgl">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Kelas</div>
+              <select class="field-select" id="f-kelas">
+                <option value="">-- Pilih Kelas --</option>
+                <option>I</option><option>II</option><option>III</option>
+                <option>IV</option><option>V</option><option>VI</option>
+                <option>VII</option><option>VIII</option><option>IX</option>
+                <option>X</option><option>XI</option><option>XII</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Jenis Kelamin</div>
+              <select class="field-select" id="f-jk">
+                <option value="">-- Pilih --</option>
+                <option>Laki-laki</option>
+                <option>Perempuan</option>
+              </select>
+            </div>
+            <div class="field-group full">
+              <div class="field-label">Nama Sekolah</div>
+              <input type="text" class="field-input" id="f-sekolah" placeholder="Nama sekolah...">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Nama Guru / Guru BK</div>
+              <input type="text" class="field-input" id="f-guru" placeholder="Nama guru...">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Tanggal Asesmen</div>
+              <input type="date" class="field-input" id="f-asesmen">
+            </div>
+          </div>
+          <button class="btn-full" onclick="startAssessment()">Mulai Asesmen Hambatan Fungsional →</button>
+        </div>
+
+        <!-- STEP 1-9: Asesmen Hambatan Fungsional -->
+        <div id="step-assessment" style="display:none;">
+          <div class="progress-section">
+            <div class="progress-info">
+              <span id="prog-label">Hambatan 1 dari 9</span>
+              <span id="prog-pct">11%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="prog-fill" style="width:11%"></div>
+            </div>
+          </div>
+
+          <div class="category-pills" id="cat-pills"></div>
+          <div class="section-title" id="cat-title"></div>
+          <div class="hambatan-list" id="hambatan-opts"></div>
+
+          <div class="nav-btns">
+            <button class="btn-prev" id="btn-prev" onclick="prevCat()">← Sebelumnya</button>
+            <button class="btn-next" id="btn-next" onclick="nextCat()">Selanjutnya →</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========== RESULT SCREEN ========== -->
+    <div class="screen" id="screen-result">
+      <div class="result-header">
+        <div class="result-icon">📊</div>
+        <div class="result-title">Profil Belajar Murid</div>
+        <div class="result-student" id="res-student-name">—</div>
+      </div>
+      <div class="result-body">
+        <div class="student-summary-card">
+          <div class="summary-item"><span>Nama Murid</span><strong id="res-nama">—</strong></div>
+          <div class="summary-item"><span>NISN</span><strong id="res-nisn">—</strong></div>
+          <div class="summary-item"><span>Kelas</span><strong id="res-kelas">—</strong></div>
+          <div class="summary-item"><span>Tanggal Asesmen</span><strong id="res-tgl">—</strong></div>
+          <div class="summary-item full"><span>Sekolah</span><strong id="res-sekolah">—</strong></div>
+          <div class="summary-item full"><span>Guru / Guru BK</span><strong id="res-guru">—</strong></div>
+        </div>
+
+        <div id="res-cards"></div>
+
+        <button class="print-btn" onclick="window.print()">🖨️ Cetak Profil Murid</button>
+        <button class="btn-outline" onclick="showScreen('input')" style="margin-top:10px;">➕ Input Murid Baru</button>
+        <button class="btn-outline" onclick="showScreen('welcome')" style="margin-top:10px; border-color:#c8d6e5; color:var(--gray);">← Kembali ke Menu</button>
+      </div>
+    </div>
+
+    <!-- ========== SAVED SCREEN ========== -->
+    <div class="screen" id="screen-saved">
+      <div class="form-header">
+        <button class="back-btn" onclick="showScreen('welcome')">← Kembali</button>
+        <div class="form-title">📋 Data Tersimpan</div>
+        <div class="form-subtitle">Riwayat profil murid yang telah diinput</div>
+      </div>
+      <div class="data-body">
+        <div id="saved-list"></div>
+      </div>
+    </div>
+
+  </div><!-- /app-wrapper -->
+</div><!-- /container -->
+
+<script>
+// ============================================================
+// DATA KATEGORI HAMBATAN FUNGSIONAL
+// ============================================================
+const categories = [
+  {
+    id: 0, emoji: '👁️', label: 'Penglihatan',
+    title: '1. Kesulitan Fungsional dalam Melihat',
+    options: [
+      { level: 0, text: 'Tidak ada hambatan', desc: 'Murid dapat melihat dengan baik, tidak memerlukan bantuan khusus dalam pembelajaran.' },
+      { level: 1, text: 'Hambatan ringan', desc: 'Murid menggunakan kacamata/lensa kontak dan dapat berfungsi normal dengan alat bantu tersebut.' },
+      { level: 2, text: 'Hambatan sedang', desc: 'Murid kesulitan melihat meski dengan kacamata, membutuhkan materi bercetak besar atau posisi duduk khusus.' },
+      { level: 3, text: 'Hambatan berat', desc: 'Murid hanya dapat melihat bayangan atau cahaya, membutuhkan media braille atau audio sebagai pengganti teks.' },
+      { level: 4, text: 'Hambatan sangat berat', desc: 'Murid tidak dapat melihat sama sekali (buta total), membutuhkan pendampingan khusus dan teknologi asistif penuh.' },
+    ]
+  },
+  {
+    id: 1, emoji: '👂', label: 'Pendengaran',
+    title: '2. Kesulitan Fungsional Mendengar',
+    options: [
+      { level: 0, text: 'Tidak ada hambatan', desc: 'Murid dapat mendengar dengan baik dalam kondisi kelas normal.' },
+      { level: 1, text: 'Hambatan ringan', desc: 'Murid kesulitan mendengar suara pelan atau dari kejauhan, namun berfungsi baik dalam percakapan normal.' },
+      { level: 2, text: 'Hambatan sedang', desc: 'Murid memerlukan alat bantu dengar atau posisi khusus (dekat guru), kesulitan di lingkungan bising.' },
+      { level: 3, text: 'Hambatan berat', desc: 'Murid sangat terbatas pendengarannya meski dengan alat bantu, mengandalkan bahasa isyarat dan membaca bibir.' },
+      { level: 4, text: 'Hambatan sangat berat', desc: 'Murid tidak dapat mendengar sama sekali (tuli total), komunikasi sepenuhnya melalui bahasa isyarat atau media visual.' },
+    ]
+  },
+  {
+    id: 2, emoji: '🦽', label: 'Gerak Kasar',
+    title: '3. Kesulitan Fungsional Bergerak Secara Kasar',
+    options: [
+      { level: 0, text: 'Tidak ada hambatan', desc: 'Murid bergerak bebas tanpa bantuan, mengikuti aktivitas fisik dengan normal.' },
+      { level: 1, text: 'Hambatan ringan', desc: 'Murid sedikit terbatas dalam aktivitas fisik tertentu namun dapat bergerak mandiri di sekolah.' },
+      { level: 2, text: 'Hambatan sedang', desc: 'Murid memerlukan alat bantu (tongkat, walker, kruk) atau aksesibilitas khusus untuk berpindah tempat.' },
+      { level: 3, text: 'Hambatan berat', desc: 'Murid menggunakan kursi roda, memerlukan bantuan untuk berpindah, sekolah harus ramah difabel.' },
+      { level: 4, text: 'Hambatan sangat berat', desc: 'Murid tidak dapat bergerak mandiri sama sekali, memerlukan pendamping penuh dan peralatan transfer khusus.' },
+    ]
+  },
+  {
+    id: 3, emoji: '🤏', label: 'Koordinasi Halus',
+    title: '4. Kesulitan Fungsional Koordinasi Jari / Motorik Halus',
+    options: [
+      { level: 0, text: 'Tidak ada hambatan', desc: 'Murid dapat menulis, menggambar, dan menggunakan peralatan dengan baik.' },
+      { level: 1, text: 'Hambatan ringan', desc: 'Tulisan murid kurang rapi atau sedikit kesulitan menggunting dan menggenggam benda kecil.' },
+      { level: 2, text: 'Hambatan sedang', desc: 'Murid butuh waktu lebih lama untuk menulis, memerlukan alat tulis adaptif atau opsi ujian lisan.' },
+      { level: 3, text: 'Hambatan berat', desc: 'Murid sangat kesulitan menulis, memerlukan alat bantu teknologi (tablet, komputer) untuk mengerjakan tugas.' },
+      { level: 4, text: 'Hambatan sangat berat', desc: 'Murid tidak dapat menggunakan tangan untuk menulis, memerlukan scribe (juru tulis) atau teknologi asistif penuh.' },
+    ]
+  },
+  {
+    id: 4, emoji: '🗣️', label: 'Berbicara',
+    title: '5. Kesulitan Fungsional Berbicara',
+    options: [
+      { level: 0, text: 'Tidak ada hambatan', desc: 'Murid dapat berkomunikasi lisan dengan jelas dan lancar.' },
+      { level: 1, text: 'Hambatan ringan', desc: 'Murid sedikit gagap atau kurang jelas dalam pengucapan, masih dapat dipahami oleh pendengar.' },
+      { level: 2, text: 'Hambatan sedang', desc: 'Murid sering kesulitan berbicara, dibutuhkan kesabaran dan perhatian ekstra untuk memahami ucapannya.' },
+      { level: 3, text: 'Hambatan berat', desc: 'Murid sangat terbatas kemampuan bicaranya, memerlukan AAC (Komunikasi Alternatif dan Augmentatif).' },
+      { level: 4, text: 'Hambatan sangat berat', desc: 'Murid tidak dapat berbicara sama sekali, sepenuhnya menggunakan media visual atau perangkat komunikasi khusus.' },
+    ]
+  },
+  {
+    id: 5, emoji: '🧠', label: 'Intelektual',
+    title: '6. Kesulitan Fungsional dalam Kemampuan Intelektual',
+    options: [
+      { level: 0, text: 'Tidak ada hambatan', desc: 'Murid memiliki kemampuan intelektual yang sesuai dengan usia dan jenjang kelasnya.' },
+      { level: 1, text: 'Hambatan ringan', desc: 'Murid membutuhkan waktu lebih lama untuk memahami instruksi dan materi baru.' },
+      { level: 2, text: 'Hambatan sedang', desc: 'Murid memerlukan penyederhanaan materi, pengulangan instruksi, dan strategi pembelajaran yang berbeda.' },
+      { level: 3, text: 'Hambatan berat', desc: 'Murid memerlukan kurikulum yang sangat dimodifikasi dan pendampingan intensif dari guru.' },
+      { level: 4, text: 'Hambatan sangat berat', desc: 'Murid memerlukan Program Pembelajaran Individual (PPI), target pembelajaran sangat disesuaikan kebutuhan spesifik.' },
+    ]
+  },
+  {
+    id: 6, emoji: '📖', label: 'Membaca',
+    title: '7. Kesulitan Fungsional Membaca',
+    options: [
+      { level: 0, text: 'Tidak ada hambatan', desc: 'Murid dapat membaca teks sesuai tingkat kelas dengan pemahaman yang baik.' },
+      { level: 1, text: 'Hambatan ringan', desc: 'Murid membaca lebih lambat dari teman sebaya, kadang memerlukan bantuan untuk kata-kata tertentu.' },
+      { level: 2, text: 'Hambatan sedang', desc: 'Murid menunjukkan tanda disleksia atau kesulitan fonik, memerlukan strategi membaca khusus.' },
+      { level: 3, text: 'Hambatan berat', desc: 'Murid sangat kesulitan membaca, memerlukan teks audio, gambar pendukung, dan materi audio-visual.' },
+      { level: 4, text: 'Hambatan sangat berat', desc: 'Murid tidak dapat membaca sama sekali, semua materi disajikan dalam format lisan atau audio penuh.' },
+    ]
+  },
+  {
+    id: 7, emoji: '🤝', label: 'Perilaku/Sosial',
+    title: '8. Kesulitan Fungsional Perilaku, Sosialisasi, atau Perhatian',
+    options: [
+      { level: 0, text: 'Tidak ada hambatan', desc: 'Murid dapat berinteraksi sosial, mengatur perilaku, dan mempertahankan perhatian dengan baik.' },
+      { level: 1, text: 'Hambatan ringan', desc: 'Murid kadang sulit fokus atau canggung secara sosial, namun masih dapat beradaptasi dengan baik.' },
+      { level: 2, text: 'Hambatan sedang', desc: 'Murid menunjukkan tanda ADHD, autisme ringan, atau kesulitan sosialisasi yang memerlukan dukungan.' },
+      { level: 3, text: 'Hambatan berat', desc: 'Murid sering mengalami meltdown, sangat sulit berinteraksi, memerlukan jadwal dan lingkungan yang sangat terstruktur.' },
+      { level: 4, text: 'Hambatan sangat berat', desc: 'Murid memerlukan program perilaku intensif dan pendampingan satu-satu secara konsisten sepanjang hari sekolah.' },
+    ]
+  },
+  {
+    id: 8, emoji: '💙', label: 'Emosi',
+    title: '9. Kesulitan Fungsional dalam Mengelola Emosi',
+    options: [
+      { level: 0, text: 'Tidak ada hambatan', desc: 'Murid dapat mengenali dan mengelola emosi dengan baik sesuai usianya.' },
+      { level: 1, text: 'Hambatan ringan', desc: 'Murid kadang bereaksi berlebihan atau sulit mengontrol emosi dalam situasi stres tertentu.' },
+      { level: 2, text: 'Hambatan sedang', desc: 'Murid sering cemas, mudah marah, atau menarik diri, memerlukan dukungan psikologis secara rutin.' },
+      { level: 3, text: 'Hambatan berat', desc: 'Murid menunjukkan gejala trauma, depresi, atau kecemasan berat yang memengaruhi kemampuan belajarnya.' },
+      { level: 4, text: 'Hambatan sangat berat', desc: 'Murid memerlukan intervensi psikologis intensif dan kerjasama antara sekolah, keluarga, dan tenaga ahli.' },
+    ]
+  }
+];
+
+// ============================================================
+// DATABASE REKOMENDASI
+// ============================================================
+const recs = [
+  { // 0 - Penglihatan
+    alat: ['Tidak diperlukan','Kacamata / lensa kontak','Materi cetak berukuran besar, layar diperbesar','Braille display, screen reader, materi audio','Tongkat putih, teknologi asistif penuh, screen reader'],
+    pendamping: ['Tidak diperlukan','Tidak diperlukan','Pendamping sebaya sesekali','Asisten guru terlatih braille','Guru pendamping khusus orientasi dan mobilitas'],
+    layanan: ['Pembelajaran reguler','Posisi duduk di baris depan, pencahayaan memadai','Materi cetak besar, layar diperbesar, kontras tinggi','Bahan audio dan braille, waktu ujian diperpanjang','Teknologi asistif penuh, kurikulum adaptif berbasis audio']
+  },
+  { // 1 - Pendengaran
+    alat: ['Tidak diperlukan','Alat bantu dengar standar','Alat bantu dengar + FM system, posisi strategis','Interpreter bahasa isyarat, SIBI/BISINDO','Penerjemah isyarat penuh, media visual total'],
+    pendamping: ['Tidak diperlukan','Tidak diperlukan','Guru terlatih komunikasi total','Interpreter bahasa isyarat sertifikasi','Interpreter bahasa isyarat full-time'],
+    layanan: ['Pembelajaran reguler','Duduk di depan, guru bicara jelas, tidak membelakangi','Teks tertulis di layar, subtitel video, visual aids','Bahasa isyarat, semua materi berbasis visual','Program inklusif khusus dengan pendekatan komunikasi total']
+  },
+  { // 2 - Gerak Kasar
+    alat: ['Tidak diperlukan','Tidak diperlukan','Tongkat / walker / kruk sesuai kebutuhan','Kursi roda manual atau elektrik, meja adaptif','Kursi roda + peralatan transfer, bed wedge'],
+    pendamping: ['Tidak diperlukan','Tidak diperlukan','Pendamping parsial saat perpindahan kelas','Asisten mobilitas harian','Pendamping mobilitas penuh, perawat sekolah'],
+    layanan: ['Pembelajaran reguler','Waktu lebih untuk perpindahan antar kelas','Jalur aksesibel, ramp, lift, tempat parkir disabilitas','Ruang kelas lantai 1, toilet aksesibel, meja adaptif','Layanan homebound atau kelas khusus yang sepenuhnya aksesibel']
+  },
+  { // 3 - Koordinasi Halus
+    alat: ['Tidak diperlukan','Alat tulis grip khusus, penggaris bergerigi','Alat tulis adaptif, papan penahan kertas','Tablet / keyboard adaptif, mouse khusus','Software voice-to-text, eye-tracking, switch access'],
+    pendamping: ['Tidak diperlukan','Tidak diperlukan','Pendamping sebaya untuk tugas tertentu','Asisten tugas dan ujian','Scribe (juru tulis) full-time'],
+    layanan: ['Pembelajaran reguler','Waktu tambahan untuk mengerjakan tugas tertulis','Ujian lisan sebagai alternatif tugas tulis','Semua tugas berbasis komputer atau tablet','Seluruh penilaian melalui teknologi asistif atau lisan']
+  },
+  { // 4 - Berbicara
+    alat: ['Tidak diperlukan','Tidak diperlukan','Kartu komunikasi, papan komunikasi gambar','AAC device (PCS / PECS / BoardMaker)','SGD (Speech Generating Device) berbasis komputer'],
+    pendamping: ['Tidak diperlukan','Tidak diperlukan','Guru terlatih AAC dan komunikasi alternatif','Terapis wicara kolaborasi mingguan','Spesialis AAC dan komunikasi augmentatif'],
+    layanan: ['Pembelajaran reguler','Berikan waktu berbicara lebih, hindari terburu-buru','Presentasi tertulis atau visual sebagai opsi alternatif','Semua komunikasi melalui AAC, latihan rutin','Program komunikasi augmentatif intensif kolaboratif']
+  },
+  { // 5 - Intelektual
+    alat: ['Tidak diperlukan','Tidak diperlukan','Materi bergambar / visual / konkret','Kurikulum modifikasi, materi fungsional','Program Pembelajaran Individual (PPI) tertulis'],
+    pendamping: ['Tidak diperlukan','Tutor sebaya terlatih','Guru pendukung (shadow teacher parsial)','Guru pendidikan khusus kolaboratif','Guru pendidikan khusus full-time'],
+    layanan: ['Pembelajaran reguler','Penjelasan berulang, instruksi bertahap','Materi disederhanakan, pendekatan belajar konkret','Kurikulum adaptif dengan target individual','Program pendidikan individual (PPI) penuh lintas bidang studi']
+  },
+  { // 6 - Membaca
+    alat: ['Tidak diperlukan','Tidak diperlukan','Buku audio, text-to-speech, font diperbesar','Software disleksia, font Dyslexie/OpenDyslexic','Seluruh materi dalam format audio atau multimedia'],
+    pendamping: ['Tidak diperlukan','Tutor sebaya membaca terbimbing','Guru membaca terlatih remedial','Spesialis disleksia / literasi','Asisten membaca dan pendamping tugas penuh'],
+    layanan: ['Pembelajaran reguler','Waktu lebih, teks diperbesar, pencahayaan baik','Strategi fonik intensif, buku audio, multisensori','Teknologi bantu baca, semua ujian lisan','Semua materi dalam format audio / visual / multimedia']
+  },
+  { // 7 - Perilaku / Sosial
+    alat: ['Tidak diperlukan','Tidak diperlukan','Visual schedule, timer visual, fidget tools','Social story, sensory kit, ruang tenang','Behavior Support Plan tertulis, ruang dekompresi'],
+    pendamping: ['Tidak diperlukan','Guru kelas dengan pelatihan dasar inklusif','Konselor sekolah / psikolog pendidikan','Shadow teacher terlatih ABA','ABA therapist + shadow teacher penuh'],
+    layanan: ['Pembelajaran reguler','Jadwal terstruktur, aturan jelas dan konsisten','Strategi PBS, break teratur, reinforcement positif','Kelas kecil, sensory room, program sosial khusus','Program perilaku intensif individual berbasis tim multidisiplin']
+  },
+  { // 8 - Emosi
+    alat: ['Tidak diperlukan','Tidak diperlukan','Emotion chart, kartu perasaan, jurnal harian','Anxiety toolkit, ruang tenang, protokol pereda stres','Protokol krisis tertulis, rencana keselamatan pribadi'],
+    pendamping: ['Tidak diperlukan','Wali kelas suportif dan peka emosi','Guru BK terlatih konseling singkat','Psikolog sekolah kolaboratif','Psikolog klinis + tim multidisiplin (sekolah-keluarga-tenaga ahli)'],
+    layanan: ['Pembelajaran reguler','Lingkungan aman, komunikasi terbuka, tidak menghakimi','Konseling rutin, fleksibilitas deadline tugas','Intervensi psikologis, rencana keselamatan individual','Kolaborasi intensif sekolah-keluarga-psikolog-tenaga medis']
+  }
+];
+
+const levelLabels = ['Tidak Ada', 'Ringan', 'Sedang', 'Berat', 'Sangat Berat'];
+const tagColors   = ['tag-green', 'tag-blue', 'tag-blue', 'tag-amber', 'tag-red'];
+
+// ============================================================
+// STATE
+// ============================================================
+let currentCat = 0;
+let answers = new Array(9).fill(null);
+let savedData = JSON.parse(localStorage.getItem('pbs_data') || '[]');
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  if (name === 'input') {
+    document.getElementById('screen-input').classList.add('active');
+    document.getElementById('step-0').style.display = 'block';
+    document.getElementById('step-assessment').style.display = 'none';
+    currentCat = 0;
+    answers = new Array(9).fill(null);
+  } else if (name === 'saved') {
+    document.getElementById('screen-saved').classList.add('active');
+    renderSaved();
+  } else {
+    document.getElementById('screen-' + name).classList.add('active');
+  }
+  window.scrollTo(0, 0);
+}
+
+// ============================================================
+// ASSESSMENT
+// ============================================================
+function startAssessment() {
+  const nama = document.getElementById('f-nama').value.trim();
+  if (!nama) { alert('Harap isi nama murid terlebih dahulu.'); return; }
+  document.getElementById('step-0').style.display = 'none';
+  document.getElementById('step-assessment').style.display = 'block';
+  currentCat = 0;
+  renderCat();
+}
+
+function renderCat() {
+  const cat = categories[currentCat];
+  const total = categories.length;
+  const pct = Math.round(((currentCat + 1) / total) * 100);
+
+  document.getElementById('prog-label').textContent = `Hambatan ${currentCat + 1} dari ${total}`;
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+
+  // Category pills
+  let pillsHtml = '';
+  categories.forEach((c, i) => {
+    let cls = 'category-pill';
+    if (i === currentCat) cls += ' active';
+    else if (answers[i] !== null) cls += ' done';
+    pillsHtml += `<div class="${cls}" onclick="jumpTo(${i})" title="${c.title}">${c.emoji} ${c.label}</div>`;
+  });
+  document.getElementById('cat-pills').innerHTML = pillsHtml;
+
+  document.getElementById('cat-title').innerHTML =
+    `${cat.emoji} ${cat.title} <span class="section-badge">${cat.label}</span>`;
+
+  // Answer options
+  let optsHtml = '';
+  cat.options.forEach((opt, i) => {
+    const sel = answers[currentCat] === i ? ' selected' : '';
+    optsHtml += `
+      <div class="hambatan-item${sel}" onclick="selectOpt(${i})">
+        <div class="radio-dot"><div class="radio-inner"></div></div>
+        <div class="hambatan-text">
+          <strong>${opt.text}</strong>
+          ${opt.desc}
+        </div>
+      </div>`;
+  });
+  document.getElementById('hambatan-opts').innerHTML = optsHtml;
+
+  document.getElementById('btn-prev').style.opacity = currentCat === 0 ? '0.4' : '1';
+  document.getElementById('btn-next').textContent =
+    currentCat === total - 1 ? '✅ Lihat Hasil' : 'Selanjutnya →';
+
+  window.scrollTo(0, 0);
+}
+
+function jumpTo(i) { currentCat = i; renderCat(); }
+
+function selectOpt(i) {
+  answers[currentCat] = i;
+  document.querySelectorAll('.hambatan-item').forEach((el, idx) => {
+    el.classList.toggle('selected', idx === i);
+  });
+}
+
+function prevCat() {
+  if (currentCat > 0) { currentCat--; renderCat(); }
+}
+
+function nextCat() {
+  if (answers[currentCat] === null) {
+    alert('Harap pilih salah satu pernyataan yang paling sesuai dengan kondisi murid.');
+    return;
+  }
+  if (currentCat < categories.length - 1) {
+    currentCat++;
+    renderCat();
+  } else {
+    showResult();
+  }
+}
+
+// ============================================================
+// RESULT
+// ============================================================
+function showResult() {
+  const nama    = document.getElementById('f-nama').value || '—';
+  const nisn    = document.getElementById('f-nisn').value || '—';
+  const kelas   = document.getElementById('f-kelas').value || '—';
+  const jk      = document.getElementById('f-jk').value || '—';
+  const sekolah = document.getElementById('f-sekolah').value || '—';
+  const guru    = document.getElementById('f-guru').value || '—';
+  const tgl     = document.getElementById('f-asesmen').value || new Date().toISOString().split('T')[0];
+
+  document.getElementById('res-student-name').textContent = nama + ' — Kelas ' + kelas;
+  document.getElementById('res-nama').textContent    = nama;
+  document.getElementById('res-nisn').textContent    = nisn;
+  document.getElementById('res-kelas').textContent   = kelas + ' (' + jk + ')';
+  document.getElementById('res-sekolah').textContent = sekolah;
+  document.getElementById('res-guru').textContent    = guru;
+  document.getElementById('res-tgl').textContent     = tgl;
+
+  const issues = answers
+    .map((a, i) => a > 0 ? { cat: categories[i], level: a, idx: i } : null)
+    .filter(Boolean);
+
+  let cardsHtml = '';
+
+  if (issues.length === 0) {
+    cardsHtml = `
+      <div class="result-card green">
+        <div class="result-card-header">
+          <div class="result-card-icon">✅</div>
+          <div class="result-card-title">Tidak Ditemukan Hambatan Fungsional Signifikan</div>
+        </div>
+        <div class="result-item"><div class="result-bullet"></div>
+          <div>Berdasarkan asesmen, murid dapat mengikuti pembelajaran reguler tanpa penyesuaian khusus. Tetap pantau perkembangan secara berkala.</div>
+        </div>
+      </div>`;
+  } else {
+    // Card 1: Jenis Hambatan
+    const tags = issues.map(i =>
+      `<span class="result-tag ${tagColors[i.level]}">${i.cat.emoji} ${i.cat.label} — ${levelLabels[i.level]}</span>`
+    ).join('');
+    cardsHtml += `
+      <div class="result-card blue">
+        <div class="result-card-header">
+          <div class="result-card-icon">🔍</div>
+          <div class="result-card-title">1. Jenis Kesulitan Fungsional Teridentifikasi</div>
+        </div>
+        <div style="margin-top:4px;">${tags}</div>
+      </div>`;
+
+    // Card 2: Alat Bantu
+    cardsHtml += `<div class="result-card amber"><div class="result-card-header"><div class="result-card-icon">🛠️</div><div class="result-card-title">2. Kebutuhan Alat Bantu</div></div>`;
+    issues.forEach(issue => {
+      const r = recs[issue.idx];
+      const alat = r.alat[Math.min(issue.level, r.alat.length - 1)];
+      cardsHtml += `<div class="result-item"><div class="result-bullet"></div><div><strong>${issue.cat.emoji} ${issue.cat.label}:</strong> ${alat}</div></div>`;
+    });
+    cardsHtml += `</div>`;
+
+    // Card 3: Pendampingan
+    cardsHtml += `<div class="result-card green"><div class="result-card-header"><div class="result-card-icon">👩‍🏫</div><div class="result-card-title">3. Kebutuhan Pendampingan</div></div>`;
+    issues.forEach(issue => {
+      const r = recs[issue.idx];
+      const pend = r.pendamping[Math.min(issue.level, r.pendamping.length - 1)];
+      cardsHtml += `<div class="result-item"><div class="result-bullet"></div><div><strong>${issue.cat.emoji} ${issue.cat.label}:</strong> ${pend}</div></div>`;
+    });
+    cardsHtml += `</div>`;
+
+    // Card 4: Penyesuaian Layanan
+    const hasHeavy = issues.some(i => i.level >= 3);
+    const cardClass = hasHeavy ? 'danger' : 'blue';
+    cardsHtml += `<div class="result-card ${cardClass}"><div class="result-card-header"><div class="result-card-icon">📚</div><div class="result-card-title">4. Rekomendasi Penyesuaian Layanan Pembelajaran</div></div>`;
+    issues.forEach(issue => {
+      const r = recs[issue.idx];
+      const layanan = r.layanan[Math.min(issue.level, r.layanan.length - 1)];
+      cardsHtml += `<div class="result-item"><div class="result-bullet"></div><div><strong>${issue.cat.emoji} ${issue.cat.label}:</strong> ${layanan}</div></div>`;
+    });
+    if (hasHeavy) {
+      cardsHtml += `<div class="result-item" style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(163,45,45,0.2);">
+        <div class="result-bullet" style="background:#A32D2D;"></div>
+        <div><strong>Catatan Penting:</strong> Murid ini memerlukan asesmen lebih lanjut oleh tim multidisiplin (psikolog, terapis, dokter) dan penyusunan Program Pembelajaran Individual (PPI) bersama orang tua.</div>
+      </div>`;
+    }
+    cardsHtml += `</div>`;
+  }
+
+  document.getElementById('res-cards').innerHTML = cardsHtml;
+
+  // Save to localStorage
+  const record = { nama, nisn, kelas, jk, sekolah, guru, tgl, answers: [...answers], issues: issues.length, savedAt: new Date().toISOString() };
+  savedData.unshift(record);
+  if (savedData.length > 50) savedData = savedData.slice(0, 50);
+  localStorage.setItem('pbs_data', JSON.stringify(savedData));
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-result').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ============================================================
+// SAVED DATA
+// ============================================================
+function renderSaved() {
+  const el = document.getElementById('saved-list');
+  if (!savedData.length) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <p><strong>Belum ada data tersimpan</strong>Data murid yang telah diinput akan muncul di sini secara otomatis.</p>
+      </div>`;
+    return;
+  }
+  let html = '';
+  savedData.forEach((d) => {
+    const inisial = (d.nama || 'M').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    const tgl = d.savedAt ? new Date(d.savedAt).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : d.tgl;
+    html += `
+      <div class="data-item">
+        <div class="data-avatar">${inisial}</div>
+        <div class="data-info">
+          <div class="data-name">${d.nama || '—'}</div>
+          <div class="data-meta">Kelas ${d.kelas || '-'} · ${d.sekolah || '-'}<br>${d.issues} hambatan teridentifikasi · ${tgl}</div>
+        </div>
+        <div class="data-arrow">›</div>
+      </div>`;
+  });
+  el.innerHTML = html;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.getElementById('f-asesmen').value = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
